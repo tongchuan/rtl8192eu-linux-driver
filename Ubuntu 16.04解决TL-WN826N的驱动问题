@@ -1,0 +1,62 @@
+url: https://blog.csdn.net/sxbyyy/article/details/73865023
+
+
+Ubuntu 16.04安装TL-WN826N驱动
+本渣刚在实验室台式机上装上了Ubuntu系统，奈何平时用的都是笔记本，没有遇到过网卡的问题。
+
+之前在淘宝上购买了一个TL-WN826N的外接USB网卡，结果后来发现Ubuntu上没法识别啊 啊啊啊。
+
+官网上找到的都是Windows的驱动，无奈只好自己寻找解决方法。试过了网上各路大神的方法均不起作用，还有类似 sudo apt-get install .... 的方式，但是碍于台式机上本来就没有网，这类方法均不起效。最后搜到了一个帖子解决了驱动问题。原帖如下： 
+http://xxd3vin.github.io/2017/03/28/install-tl-wn826n-usb-wireless-wifi-adapter-rtl8192eu-on-ubuntu-16.04.html
+
+下面将该帖子的基本方法贴出： 
+首先在终端中键入：
+
+lsusb
+
+查看该机的usb设备接入信息，以下是我的机子上的设备，Bus 003 Device 005: ID 0bda:818b Realtek Semiconductor Corp. 便是接入的无线网卡，说明电脑已经识别到了，就差个驱动了。
+
+Bus 002 Device 004: ID 046d:c31c Logitech, Inc. Keyboard K120
+Bus 002 Device 003: ID 046d:c045 Logitech, Inc. Optical Mouse
+Bus 002 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
+Bus 002 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 001 Device 013: ID 0781:5597 SanDisk Corp. 
+Bus 001 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 004 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 003 Device 005: ID 0bda:818b Realtek Semiconductor Corp. //该行为网卡设备
+Bus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+
+于是上网查询了下设备号 0bda:818b 的芯片信号为 rtl8192eu。好就是你了，网上各种寻找了一波之后发现了上面的帖子，根据上面的帖子。
+
+首先要做的是去github下载一波驱动包： 
+https://github.com/Mange/rtl8192eu-linux-driver
+
+下载完之后拷贝到电脑中，解压，进入该文件夹
+
+$ cd rtl8192eu-linux-driver-master
+$ sudo dkms add .
+$ sudo dkms install rtl8192eu/1.0
+
+一般情况下这样就可以成功了，如果出现以下问题，在进行相应的操作。
+
+问题1
+没有dkms包，请移步： 
+https://launchpad.net/ubuntu/+source/dkms/2.3-3ubuntu1 
+自行安装
+
+问题2
+安装后还是没有反应，试着将无线网卡拔了再插上。如果还是不行，试试以下操作：
+
+sudo dkms uninstall rtl8192eu/1.0
+sudo dkms remove rtl8192eu/1.0 --all
+cd rtl8192eu-linux-driver
+sudo dkms add .
+sudo dkms install rtl8192eu/1.0
+
+本渣到这一步已经可以识别出来无线网卡了，如果各位看官还有问题可以去原帖中看看其他的解决方案。
+--------------------- 
+作者：sxbyyy 
+来源：CSDN 
+原文：https://blog.csdn.net/sxbyyy/article/details/73865023 
+版权声明：本文为博主原创文章，转载请附上博文链接！
